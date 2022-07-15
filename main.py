@@ -7,6 +7,11 @@ HEIGHT = 500
 display = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.clock()
 
+#PLayer class
+class Player:
+
+
+
 #main loop
 while True:
 
