@@ -7,7 +7,18 @@ HEIGHT = 500
 szín = (0, 0, 0)
 SPEED = 10
 display = pygame.display.set_mode((WIDTH, HEIGHT))
-clock = pygame.time.clock()
+clock = pygame.time.Clock()
+
+#Háttér class
+class Background:
+    def __init__(self, x=0, y=0, kép=pygame.image.load("map.png")):
+        self.x = x
+        self.y = y
+        self.kép = kép
+        self.körvonal = self.kép.get_rect(topleft=(x, y))
+
+    def megjelenés(self):
+        display.blit(self.kép, self.körvonal)
 
 #Játékos class
 class Player:
