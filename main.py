@@ -11,14 +11,29 @@ clock = pygame.time.Clock()
 
 #Háttér class
 class Background:
-    def __init__(self, x=0, y=0, kép=pygame.image.load("bg.png")):
+    def __init__(self, x, y, kép=pygame.image.load("bg.png")):
         self.x = x
         self.y = y
         self.kép = kép
-        self.körvonal = self.kép.get_rect(topleft=(x, y))
+        self.körvonal = self.kép.get_rect()
 
     def megjelenés(self):
         display.blit(self.kép, self.körvonal)
+
+    #A háttér mozog és olyan mintha követné a kamera a játékost
+    def mozgás(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            self.y += 5
+        elif keys[pygame.K_s]:
+            self.y -= 5
+        if keys[pygame.K_d]:
+            self.x -= 5
+        elif keys[pygame.K_a]:
+            self.x += 5
+        self.pos = (self.x, self.y)
+        self.körvonal.center = self.pos
+
 
 #Játékos class
 class Player:
@@ -30,8 +45,8 @@ class Player:
         self.speed = speed
         self.irány = irány
 
-
-    def mozgás(self):
+    #A játékos mozog
+    """def mozgás(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             self.y -= self.speed
@@ -48,14 +63,14 @@ class Player:
         #pozició frissítése
         self.pos = (self.x, self.y)
         self.körvonal.midbottom = self.pos
-
+"""
 
     def megjelenés(self):
         display.blit(self.kép, self.körvonal)
 
 #Példányosítás
 player = Player(250,250)
-háttér = Background(0, 0)
+háttér = Background(250, 250)
 
 #fő loop
 running = True
@@ -66,9 +81,10 @@ while running:
             running = False
             pygame.quit()
             sys.exit()
-
+    display.fill(0)
+    háttér.mozgás()
     háttér.megjelenés()
-    player.mozgás()
+    #player.mozgás()
     player.megjelenés()
 
     pygame.display.update()
