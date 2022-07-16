@@ -45,8 +45,8 @@ class Player:
         elif keys[pygame.K_a]:
             self.x -= self.speed
             self.irány = 3
+        #pozició frissítése
         self.pos = (self.x, self.y)
-        print(self.pos)
         self.körvonal.midbottom = self.pos
 
 
@@ -60,16 +60,17 @@ háttér = Background(0, 0)
 #fő loop
 running = True
 while running:
-
     #kilépés a játékból
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
             sys.exit()
+
     háttér.megjelenés()
     player.mozgás()
     player.megjelenés()
+
     pygame.display.update()
     clock.tick(40)
 
