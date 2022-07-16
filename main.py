@@ -1,15 +1,46 @@
 import pygame
 import sys
+from pytmx.util_pygame import load_pygame
+
 pygame.init()
 
-WIDTH = 500
-HEIGHT = 500
+WIDTH = 1800
+HEIGHT = 1000
 szín = (0, 0, 0)
 SPEED = 5
 display = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
+deli = load_pygame("deli2.tmx")
+sprite_group = pygame.sprite.Group()
+eltolas = [0, 0]
+bg = pygame.Surface((WIDTH, HEIGHT))
 
-#Háttér class
+
+#rajzolt háttér
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, pos, surf, groups):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_rect(center = pos)
+def hatter_rajzolas():
+    sprite_group.empty()
+    for layer in deli.visible_layers:
+        for x, y, surf in layer.tiles():
+            pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
+            Tile(pos=pos, surf=surf, groups=sprite_group)
+#rajzolt háttér mozgatása
+def mozgás():
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w]:
+        eltolas[1] += 10
+    elif keys[pygame.K_s]:
+        eltolas[1] -= 10
+    if keys[pygame.K_d]:
+        eltolas[0] -= 10
+    elif keys[pygame.K_a]:
+        eltolas[0] += 10
+
+#(kép)Háttér class
 class Background:
     def __init__(self, x, y, kép=pygame.image.load("bg.png")):
         self.x = x
@@ -81,12 +112,15 @@ while running:
             running = False
             pygame.quit()
             sys.exit()
-    display.fill(0)
-    háttér.mozgás()
-    háttér.megjelenés()
+    display.fill(szín)
+    mozgás()
+    hatter_rajzolas()
+    sprite_group.draw(display)
+    #háttér.mozgás()
+    #háttér.megjelenés()
     #player.mozgás()
     player.megjelenés()
-
+    pygame.display.flip()
     pygame.display.update()
     clock.tick(40)
 
