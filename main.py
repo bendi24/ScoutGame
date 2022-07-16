@@ -5,13 +5,13 @@ pygame.init()
 WIDTH = 500
 HEIGHT = 500
 szín = (0, 0, 0)
-SPEED = 10
+SPEED = 5
 display = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
 #Háttér class
 class Background:
-    def __init__(self, x=0, y=0, kép=pygame.image.load("map.png")):
+    def __init__(self, x=0, y=0, kép=pygame.image.load("bg.png")):
         self.x = x
         self.y = y
         self.kép = kép
@@ -22,7 +22,7 @@ class Background:
 
 #Játékos class
 class Player:
-    def __init__(self, x, y, kép, speed=5, irány=0):
+    def __init__(self, x, y, kép=pygame.image.load("walk_1.png"), speed=5, irány=0):
         self.x = x
         self.y = y
         self.kép = kép
@@ -30,10 +30,9 @@ class Player:
         self.speed = speed
         self.irány = irány
 
-    def megjelenés(self):
-        display.blit(self.kép, self.körvonal)
 
-    def mozgás(self, keys):
+    def mozgás(self):
+        keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             self.y -= self.speed
             self.irány = 0
@@ -46,20 +45,21 @@ class Player:
         elif keys[pygame.K_a]:
             self.x -= self.speed
             self.irány = 3
+        self.pos = (self.x, self.y)
+        print(self.pos)
+        self.körvonal.midbottom = self.pos
+
+
+    def megjelenés(self):
+        display.blit(self.kép, self.körvonal)
 
 #Példányosítás
-player = Player(0, 0, pygame.image.load("walk_1.png").convert_alpha(), SPEED)
+player = Player(250,250)
 háttér = Background(0, 0)
 
 #fő loop
 running = True
-billentyűk = pygame.key.get_pressed()
 while running:
-
-    háttér.megjelenés()
-    player.mozgás(billentyűk)
-    player.megjelenés()
-
 
     #kilépés a játékból
     for event in pygame.event.get():
@@ -67,6 +67,9 @@ while running:
             running = False
             pygame.quit()
             sys.exit()
-
+    háttér.megjelenés()
+    player.mozgás()
+    player.megjelenés()
     pygame.display.update()
+    clock.tick(40)
 
