@@ -41,22 +41,35 @@ class hater3:
     #rajzolt háttér mozgatása
     def mozgás(self):
         speed = 10
+        counter = 0
         self.fel = False
         self.le = False
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
+            counter += 1
+            if counter >= 2:
+                speed = speed/math.sqrt(2)
             eltolas[1] += speed
             player.irány = 0
             self.fel = True
         if keys[pygame.K_s]:
+            counter += 1
+            if counter >= 2:
+                speed = speed / math.sqrt(2)
             eltolas[1] -= speed
             player.irány = 1
             self.le = True
         if keys[pygame.K_d]:
+            counter += 1
+            if counter >= 2:
+                speed = speed / math.sqrt(2)
             eltolas[0] -= speed
             player.irány = 2
         if keys[pygame.K_a]:
+            counter += 1
+            if counter >= 2:
+                speed = speed / math.sqrt(2)
             eltolas[0] += speed
             player.irány = 3
 
