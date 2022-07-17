@@ -1,3 +1,4 @@
+import math
 import pygame
 import sys
 from pytmx.util_pygame import load_pygame
@@ -24,43 +25,52 @@ class Tile(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = surf
         self.rect = self.image.get_rect(center = pos)
-def hatter_rajzolas():
-    sprite_group.empty()
-    trains.empty()
-    layer = deli.get_layer_by_name("Tile Layer 1")
-    for x, y, surf in layer.tiles():
-        pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
-        Tile(pos=pos, surf=surf, groups=sprite_group)
-    layer = deli.get_layer_by_name("falak")
-    for x, y, surf in layer.tiles():
-        pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
-        Tile(pos=pos, surf=surf, groups=trains)
-#rajzolt háttér mozgatása
-def mozgás():
-    keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_w]:
-        eltolas[1] += 10
-        player.irány = 0
-    elif keys[pygame.K_s]:
-        eltolas[1] -= 10
-        player.irány = 1
-    elif keys[pygame.K_d]:
-        eltolas[0] -= 10
-        player.irány = 2
-    elif keys[pygame.K_a]:
-        eltolas[0] += 10
-        player.irány = 3
+class hater3:
+    def rajzolas(self):
+        sprite_group.empty()
+        trains.empty()
+        layer = deli.get_layer_by_name("Tile Layer 1")
+        for x, y, surf in layer.tiles():
+            pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
+            Tile(pos=pos, surf=surf, groups=sprite_group)
+        layer = deli.get_layer_by_name("falak")
+        for x, y, surf in layer.tiles():
+            pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
+            Tile(pos=pos, surf=surf, groups=trains)
+    #rajzolt háttér mozgatása
+    def mozgás(self):
+        speed = 10
+        self.fel = False
+        self.le = False
 
-def hátralökés():
-    if player.irány == 0:
-        eltolas[1] -= 10
-    elif player.irány == 1:
-        eltolas[1] += 10
-    elif player.irány == 2:
-        eltolas[0] += 10
-    elif player.irány == 3:
-        eltolas[0] -= 10
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            eltolas[1] += speed
+            player.irány = 0
+            self.fel = True
+        if keys[pygame.K_s]:
+            eltolas[1] -= speed
+            player.irány = 1
+            self.le = True
+        if keys[pygame.K_d]:
+            eltolas[0] -= speed
+            player.irány = 2
+        if keys[pygame.K_a]:
+            eltolas[0] += speed
+            player.irány = 3
+
+
+
+    def hátralökés(self):
+        if self.fel:
+            eltolas[1] -= 10
+        if self.le:
+            eltolas[1] += 10
+        if player.irány == 2:
+            eltolas[0] += 10
+        if player.irány == 3:
+            eltolas[0] -= 10
 
 #(kép)Háttér class
 class Background:
@@ -125,6 +135,7 @@ class Player(pygame.sprite.Sprite):
 #Példányosítás
 player = Player(WIDTH/2,HEIGHT/2)
 háttér = Background(0, 0)
+hatter3 = hater3()
 
 #vonatok kiválogatás
 #fő loop
@@ -139,10 +150,10 @@ while running:
             sys.exit()
     if pygame.sprite.spritecollideany(player, trains):
         print("collided")
-        hátralökés()
+        hatter3.hátralökés()
     display.fill(szín)
-    mozgás()
-    hatter_rajzolas()
+    hatter3.mozgás()
+    hatter3.rajzolas()
     sprite_group.draw(display)
     trains.draw(display)
     #háttér.mozgás()
