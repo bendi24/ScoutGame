@@ -41,12 +41,26 @@ def mozgás():
 
     if keys[pygame.K_w]:
         eltolas[1] += 10
+        player.irány = 0
     elif keys[pygame.K_s]:
         eltolas[1] -= 10
+        player.irány = 1
     if keys[pygame.K_d]:
         eltolas[0] -= 10
+        player.irány = 2
     elif keys[pygame.K_a]:
         eltolas[0] += 10
+        player.irány = 3
+
+def hátralökés():
+    if player.irány == 0:
+        eltolas[1] -= 10
+    elif player.irány == 1:
+        eltolas[1] += 10
+    elif player.irány == 2:
+        eltolas[0] += 10
+    elif player.irány == 3:
+        eltolas[0] -= 10
 
 #(kép)Háttér class
 class Background:
@@ -116,6 +130,7 @@ háttér = Background(0, 0)
 #fő loop
 running = True
 while running:
+    print(player.irány)
     #kilépés a játékból
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -123,7 +138,8 @@ while running:
             pygame.quit()
             sys.exit()
     if pygame.sprite.spritecollideany(player, trains):
-        coliding = True
+        print("collided")
+        hátralökés()
     display.fill(szín)
     mozgás()
     hatter_rajzolas()
