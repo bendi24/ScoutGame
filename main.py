@@ -14,6 +14,8 @@ deli = load_pygame("deli2.tmx")
 sprite_group = pygame.sprite.Group()
 eltolas = [0, 0]
 bg = pygame.Surface((WIDTH, HEIGHT))
+trains = pygame.sprite.Group()
+coliding = False
 
 
 #rajzolt háttér
@@ -24,13 +26,19 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = pos)
 def hatter_rajzolas():
     sprite_group.empty()
-    for layer in deli.visible_layers:
-        for x, y, surf in layer.tiles():
-            pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
-            Tile(pos=pos, surf=surf, groups=sprite_group)
+    trains.empty()
+    layer = deli.get_layer_by_name("Tile Layer 1")
+    for x, y, surf in layer.tiles():
+        pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
+        Tile(pos=pos, surf=surf, groups=sprite_group)
+    layer = deli.get_layer_by_name("trains")
+    for x, y, surf in layer.tiles():
+        pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
+        Tile(pos=pos, surf=surf, groups=trains)
 #rajzolt háttér mozgatása
 def mozgás():
     keys = pygame.key.get_pressed()
+
     if keys[pygame.K_w]:
         eltolas[1] += 10
     elif keys[pygame.K_s]:
@@ -67,12 +75,13 @@ class Background:
 
 
 #Játékos class
-class Player:
+class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, kép=pygame.image.load("walk_1.png"), speed=5, irány=0):
         self.x = x
         self.y = y
         self.kép = kép
         self.körvonal = self.kép.get_rect(center=(x, y))
+        self.rect = pygame.Rect(*display.get_rect().center, 0, 0).inflate(75, 75)
         self.speed = speed
         self.irány = irány
 
@@ -100,9 +109,10 @@ class Player:
         display.blit(self.kép, self.körvonal)
 
 #Példányosítás
-player = Player(250,250)
-háttér = Background(250, 250)
+player = Player(WIDTH/2,HEIGHT/2)
+háttér = Background(0, 0)
 
+#vonatok kiválogatás
 #fő loop
 running = True
 while running:
@@ -112,10 +122,13 @@ while running:
             running = False
             pygame.quit()
             sys.exit()
+    if pygame.sprite.spritecollideany(player, trains):
+        coliding = True
     display.fill(szín)
     mozgás()
     hatter_rajzolas()
     sprite_group.draw(display)
+    trains.draw(display)
     #háttér.mozgás()
     #háttér.megjelenés()
     #player.mozgás()
