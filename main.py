@@ -31,7 +31,7 @@ def hatter_rajzolas():
     for x, y, surf in layer.tiles():
         pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
         Tile(pos=pos, surf=surf, groups=sprite_group)
-    layer = deli.get_layer_by_name("trains")
+    layer = deli.get_layer_by_name("falak")
     for x, y, surf in layer.tiles():
         pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
         Tile(pos=pos, surf=surf, groups=trains)
@@ -45,7 +45,7 @@ def mozgás():
     elif keys[pygame.K_s]:
         eltolas[1] -= 10
         player.irány = 1
-    if keys[pygame.K_d]:
+    elif keys[pygame.K_d]:
         eltolas[0] -= 10
         player.irány = 2
     elif keys[pygame.K_a]:
