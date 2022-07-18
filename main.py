@@ -115,7 +115,7 @@ class Background:
 
 #Játékos class
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, kép=pygame.image.load("walk_1.png"), speed=5, irány=0):
+    def __init__(self, x, y, kép=pygame.image.load("Sprite-0002.png"), speed=5, irány=0):
         self.x = x
         self.y = y
         self.kép = kép
