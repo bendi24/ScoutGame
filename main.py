@@ -44,6 +44,8 @@ class hater3:
         counter = 0
         self.fel = False
         self.le = False
+        self.bal = False
+        self.jobb = False
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
@@ -60,20 +62,20 @@ class hater3:
             eltolas[1] -= speed
             player.irány = 1
             self.le = True
-        if keys[pygame.K_d]:
+        if keys[pygame.K_d] and self.bal == False:
             counter += 1
             if counter >= 2:
                 speed = speed / math.sqrt(2)
             eltolas[0] -= speed
             player.irány = 2
-        if keys[pygame.K_a]:
+            self.jobb = True
+        if keys[pygame.K_a] and self.jobb == False:
             counter += 1
             if counter >= 2:
                 speed = speed / math.sqrt(2)
             eltolas[0] += speed
             player.irány = 3
-
-
+            self.bal = True
 
     def hátralökés(self):
         if self.fel:
