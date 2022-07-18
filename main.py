@@ -2,6 +2,7 @@ import math
 import pygame
 import sys
 from pytmx.util_pygame import load_pygame
+import Dialogue
 
 pygame.init()
 
@@ -12,11 +13,14 @@ SPEED = 5
 display = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 deli = load_pygame("deli2.tmx")
-sprite_group = pygame.sprite.Group()
 eltolas = [0, 0]
 bg = pygame.Surface((WIDTH, HEIGHT))
-trains = pygame.sprite.Group()
+
 coliding = False
+
+sprite_group = pygame.sprite.Group()
+trains = pygame.sprite.Group()
+interaktív = pygame.sprite.Group()
 
 
 #rajzolt háttér
@@ -30,14 +34,15 @@ class hater3:
     def rajzolas(self):
         sprite_group.empty()
         trains.empty()
-        layer = deli.get_layer_by_name("Tile Layer 1")
+        interaktív.empty()
+        self.kirajzolas(deli.get_layer_by_name("Tile Layer 1"), sprite_group)
+        self.kirajzolas(deli.get_layer_by_name("falak"), trains)
+        self.kirajzolas(deli.get_layer_by_name("interaktív"), interaktív)
+    #hatter kirajzolása
+    def kirajzolas(self, layer, groups):
         for x, y, surf in layer.tiles():
             pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
-            Tile(pos=pos, surf=surf, groups=sprite_group)
-        layer = deli.get_layer_by_name("falak")
-        for x, y, surf in layer.tiles():
-            pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
-            Tile(pos=pos, surf=surf, groups=trains)
+            Tile(pos=pos, surf=surf, groups=groups)
     #rajzolt háttér mozgatása
     def mozgás(self):
         speed = 10
@@ -146,36 +151,45 @@ class Player(pygame.sprite.Sprite):
 
     def megjelenés(self):
         display.blit(self.kép, self.körvonal)
+        display.blit(self.kép, self.körvonal)
 
 #Példányosítás
 player = Player(WIDTH/2,HEIGHT/2)
 háttér = Background(0, 0)
 hatter3 = hater3()
 
-#vonatok kiválogatás
+message = Dialogue.DynamicText(Dialogue.font, [WIDTH/4 + 50, HEIGHT/1.2 - 50], autoreset=False)
+
+
 #fő loop
 running = True
 while running:
-    print(player.irány)
     #kilépés a játékból
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
             sys.exit()
-    if pygame.sprite.spritecollideany(player, trains):
-        print("collided")
-        hatter3.hátralökés()
+
     display.fill(szín)
     hatter3.mozgás()
     hatter3.rajzolas()
+    #spriteok kirajzolása csoportonként
     sprite_group.draw(display)
     trains.draw(display)
+    interaktív.draw(display)
     #háttér.mozgás()
     #háttér.megjelenés()
     #player.mozgás()
     player.megjelenés()
-    pygame.display.flip()
+    if pygame.sprite.spritecollideany(player, trains):
+        print("collided")
+        hatter3.hátralökés()
+    elif pygame.sprite.spritecollideany(player, interaktív):
+        pygame.draw.rect(display, (169,169,169), pygame.Rect(WIDTH/4, HEIGHT/1.3, WIDTH/2, 200))
+        text = pygame.font.SysFont(None, 50).render("Bulcsú", True, (196, 0, 0))
+        display.blit(text, (WIDTH/4, HEIGHT/1.3 - 30))
+        message.draw(display)
     pygame.display.update()
     clock.tick(40)
 

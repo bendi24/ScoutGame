@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.9" tiledversion="1.9.0" name="Urban2" tilewidth="64" tileheight="64" tilecount="79" columns="0">
+<tileset version="1.9" tiledversion="1.9.0" name="Urban2" tilewidth="80" tileheight="129" tilecount="80" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="64" height="64" source="../../Downloads/resized(2)/brown_tiles.jpg"/>
@@ -237,5 +237,8 @@
  </tile>
  <tile id="78">
   <image width="64" height="64" source="../../Downloads/resized(3)/train_track2-1-1.png"/>
+ </tile>
+ <tile id="79">
+  <image width="80" height="129" source="walk_1.png"/>
  </tile>
 </tileset>
