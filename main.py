@@ -16,12 +16,62 @@ deli = load_pygame("deli2.tmx")
 eltolas = [0, 0]
 bg = pygame.Surface((WIDTH, HEIGHT))
 
+#ütközés
 coliding = False
 
+#sprite-ok a térképhez
 sprite_group = pygame.sprite.Group()
 trains = pygame.sprite.Group()
 interaktív = pygame.sprite.Group()
 
+#animációk betöltése
+alap = pygame.image.load("Sprite-0002- taskas.png")
+fel = []
+le = [pygame.image.load("Sprite-0002- taskas1.png"), pygame.image.load("Sprite-0002- taskas2.png"), pygame.image.load("Sprite-0002- taskas3.png"), pygame.image.load("Sprite-0002- taskas4.png")]
+jobbra = [pygame.image.load("Sprite-00031.png"), pygame.image.load("Sprite-00032.png")]
+balra = []
+walkcount = 0
+
+
+def KépernyőFrissités():
+    global walkcount
+
+    display.fill(szín)
+    hatter3.mozgás()
+    hatter3.rajzolas()
+    # spriteok kirajzolása csoportonként
+    sprite_group.draw(display)
+    trains.draw(display)
+    interaktív.draw(display)
+    # háttér.mozgás()
+    # háttér.megjelenés()
+    # player.mozgás()
+    if walkcount + 1 >= 12:
+        walkcount = 0
+    print(player.irány)
+    if player.irány == 1:
+        display.blit(fel[walkcount//3], player.körvonal)
+        walkcount += 1
+    if player.irány == 2:
+        display.blit(le[walkcount//3], player.körvonal)
+        walkcount += 1
+    if player.irány == 3:
+        display.blit(jobbra[walkcount//6], player.körvonal)
+        walkcount += 1
+    if player.irány == 4:
+        display.blit(balra[walkcount//3], player.körvonal)
+        walkcount += 1
+    if player.irány == 0:
+        display.blit(alap, player.körvonal)
+    if pygame.sprite.spritecollideany(player, trains):
+        print("collided")
+        hatter3.hátralökés()
+    elif pygame.sprite.spritecollideany(player, interaktív):
+        pygame.draw.rect(display, (169, 169, 169), pygame.Rect(WIDTH / 4, HEIGHT / 1.3, WIDTH / 2, 200))
+        text = pygame.font.SysFont(None, 50).render("Bulcsú", True, (196, 0, 0))
+        display.blit(text, (WIDTH / 4, HEIGHT / 1.3 - 30))
+        message.draw(display)
+    pygame.display.update()
 
 #rajzolt háttér
 class Tile(pygame.sprite.Sprite):
@@ -58,29 +108,30 @@ class hater3:
             if counter >= 2:
                 speed = speed/math.sqrt(2)
             eltolas[1] += speed
-            player.irány = 0
+            player.irány = 1
             self.fel = True
         if keys[pygame.K_s]:
             counter += 1
             if counter >= 2:
                 speed = speed / math.sqrt(2)
             eltolas[1] -= speed
-            player.irány = 1
+            player.irány = 2
             self.le = True
         if keys[pygame.K_d] and self.bal == False:
             counter += 1
             if counter >= 2:
                 speed = speed / math.sqrt(2)
             eltolas[0] -= speed
-            player.irány = 2
+            player.irány = 3
             self.jobb = True
         if keys[pygame.K_a] and self.jobb == False:
             counter += 1
             if counter >= 2:
                 speed = speed / math.sqrt(2)
             eltolas[0] += speed
-            player.irány = 3
+            player.irány = 4
             self.bal = True
+
 
     def hátralökés(self):
         if self.fel:
@@ -120,7 +171,7 @@ class Background:
 
 #Játékos class
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, kép=pygame.image.load("Sprite-0002.png"), speed=5, irány=0):
+    def __init__(self, x, y, kép=pygame.image.load("Sprite-0002- taskas.png"), speed=5, irány=0):
         self.x = x
         self.y = y
         self.kép = kép
@@ -149,9 +200,8 @@ class Player(pygame.sprite.Sprite):
         self.körvonal.midbottom = self.pos
 """
 
-    def megjelenés(self):
-        display.blit(self.kép, self.körvonal)
-        display.blit(self.kép, self.körvonal)
+    def megjelenés(self, kép):
+        display.blit(kép, self.körvonal)
 
 #Példányosítás
 player = Player(WIDTH/2,HEIGHT/2)
@@ -170,26 +220,6 @@ while running:
             running = False
             pygame.quit()
             sys.exit()
-
-    display.fill(szín)
-    hatter3.mozgás()
-    hatter3.rajzolas()
-    #spriteok kirajzolása csoportonként
-    sprite_group.draw(display)
-    trains.draw(display)
-    interaktív.draw(display)
-    #háttér.mozgás()
-    #háttér.megjelenés()
-    #player.mozgás()
-    player.megjelenés()
-    if pygame.sprite.spritecollideany(player, trains):
-        print("collided")
-        hatter3.hátralökés()
-    elif pygame.sprite.spritecollideany(player, interaktív):
-        pygame.draw.rect(display, (169,169,169), pygame.Rect(WIDTH/4, HEIGHT/1.3, WIDTH/2, 200))
-        text = pygame.font.SysFont(None, 50).render("Bulcsú", True, (196, 0, 0))
-        display.blit(text, (WIDTH/4, HEIGHT/1.3 - 30))
-        message.draw(display)
-    pygame.display.update()
-    clock.tick(40)
+    KépernyőFrissités()
+    clock.tick(24)
 
