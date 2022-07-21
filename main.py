@@ -25,11 +25,11 @@ trains = pygame.sprite.Group()
 interaktív = pygame.sprite.Group()
 
 #animációk betöltése
-alap = pygame.image.load("Sprite-0002- taskas.png")
-fel = [pygame.image.load("Sprite-0001.png"), pygame.image.load("Sprite-0002.png"),  pygame.image.load("Sprite-0003.png"), pygame.image.load("Sprite-0004.png")]
-le = [pygame.image.load("Sprite-0002- taskas1.png"), pygame.image.load("Sprite-0002- taskas2.png"), pygame.image.load("Sprite-0002- taskas3.png"), pygame.image.load("Sprite-0002- taskas4.png")]
-jobbra = [pygame.image.load("Sprite-00031.png"), pygame.image.load("Sprite-00032.png")]
-balra = [pygame.transform.flip(pygame.image.load("Sprite-00031.png"), True, False),pygame.transform.flip(pygame.image.load("Sprite-00032.png"), True, False)]
+alap = pygame.image.load("Karakter/le1.png")
+fel = [pygame.image.load("Karakter/fel1.png"), pygame.image.load("Karakter/fel2.png"), pygame.image.load("Karakter/fel3.png"), pygame.image.load("Karakter/fel4.png")]
+le = [pygame.image.load("Karakter/le1.png"), pygame.image.load("Karakter/le2.png"), pygame.image.load("Karakter/le3.png"), pygame.image.load("Karakter/le4.png")]
+jobbra = [pygame.image.load("Karakter/job1.png"), pygame.image.load("Karakter/job2.png")]
+balra = [pygame.transform.flip(pygame.image.load("Karakter/job1.png"), True, False), pygame.transform.flip(pygame.image.load("Karakter/job2.png"), True, False)]
 walkcount = 0
 
 
@@ -174,7 +174,7 @@ class Background:
 
 #Játékos class
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, kép=pygame.image.load("Sprite-0002- taskas.png"), speed=5, irány=0):
+    def __init__(self, x, y, kép=pygame.image.load("Karakter/le1.png"), speed=5, irány=0):
         self.x = x
         self.y = y
         self.kép = kép
