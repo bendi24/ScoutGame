@@ -26,10 +26,10 @@ interaktív = pygame.sprite.Group()
 
 #animációk betöltése
 alap = pygame.image.load("Sprite-0002- taskas.png")
-fel = []
+fel = [pygame.image.load("Sprite-0001.png"), pygame.image.load("Sprite-0002.png"),  pygame.image.load("Sprite-0003.png"), pygame.image.load("Sprite-0004.png")]
 le = [pygame.image.load("Sprite-0002- taskas1.png"), pygame.image.load("Sprite-0002- taskas2.png"), pygame.image.load("Sprite-0002- taskas3.png"), pygame.image.load("Sprite-0002- taskas4.png")]
 jobbra = [pygame.image.load("Sprite-00031.png"), pygame.image.load("Sprite-00032.png")]
-balra = []
+balra = [pygame.transform.flip(pygame.image.load("Sprite-00031.png"), True, False),pygame.transform.flip(pygame.image.load("Sprite-00032.png"), True, False)]
 walkcount = 0
 
 
@@ -49,6 +49,9 @@ def KépernyőFrissités():
     if walkcount + 1 >= 12:
         walkcount = 0
     print(player.irány)
+    if pygame.sprite.spritecollideany(player, trains):
+        print("collided")
+        hatter3.hátralökés()
     if player.irány == 1:
         display.blit(fel[walkcount//3], player.körvonal)
         walkcount += 1
@@ -59,14 +62,11 @@ def KépernyőFrissités():
         display.blit(jobbra[walkcount//6], player.körvonal)
         walkcount += 1
     if player.irány == 4:
-        display.blit(balra[walkcount//3], player.körvonal)
+        display.blit(balra[walkcount//6], player.körvonal)
         walkcount += 1
     if player.irány == 0:
         display.blit(alap, player.körvonal)
-    if pygame.sprite.spritecollideany(player, trains):
-        print("collided")
-        hatter3.hátralökés()
-    elif pygame.sprite.spritecollideany(player, interaktív):
+    if pygame.sprite.spritecollideany(player, interaktív):
         pygame.draw.rect(display, (169, 169, 169), pygame.Rect(WIDTH / 4, HEIGHT / 1.3, WIDTH / 2, 200))
         text = pygame.font.SysFont(None, 50).render("Bulcsú", True, (196, 0, 0))
         display.blit(text, (WIDTH / 4, HEIGHT / 1.3 - 30))
@@ -131,6 +131,9 @@ class hater3:
             eltolas[0] += speed
             player.irány = 4
             self.bal = True
+        if self.fel == False and self.le == False and self.bal == False and self.jobb == False:
+            player.irány = 0
+
 
 
     def hátralökés(self):
@@ -138,9 +141,9 @@ class hater3:
             eltolas[1] -= 10
         if self.le:
             eltolas[1] += 10
-        if player.irány == 2:
-            eltolas[0] += 10
         if player.irány == 3:
+            eltolas[0] += 10
+        if player.irány == 4:
             eltolas[0] -= 10
 
 #(kép)Háttér class
