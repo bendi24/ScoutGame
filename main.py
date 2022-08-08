@@ -3,6 +3,7 @@ import pygame
 import sys
 from pytmx.util_pygame import load_pygame
 import Dialogue
+import Button
 
 pygame.init()
 
@@ -31,6 +32,11 @@ le = [pygame.image.load("Karakter/le1.png"), pygame.image.load("Karakter/le2.png
 jobbra = [pygame.image.load("Karakter/job1.png"), pygame.image.load("Karakter/job2.png")]
 balra = [pygame.transform.flip(pygame.image.load("Karakter/job1.png"), True, False), pygame.transform.flip(pygame.image.load("Karakter/job2.png"), True, False)]
 walkcount = 0
+
+#gombok
+Resume_img = pygame.image.load("gombok/Resume.png")
+Settings_img = pygame.image.load("gombok/Settings.png")
+Menu_img = pygame.image.load("gombok/Menu.png")
 
 
 def KépernyőFrissités():
@@ -183,26 +189,6 @@ class Player(pygame.sprite.Sprite):
         self.speed = speed
         self.irány = irány
 
-    #A játékos mozog
-    """def mozgás(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
-            self.y -= self.speed
-            self.irány = 0
-        elif keys[pygame.K_s]:
-            self.y += self.speed
-            self.irány = 1
-        if keys[pygame.K_d]:
-            self.x += self.speed
-            self.irány = 2
-        elif keys[pygame.K_a]:
-            self.x -= self.speed
-            self.irány = 3
-        #pozició frissítése
-        self.pos = (self.x, self.y)
-        self.körvonal.midbottom = self.pos
-"""
-
     def megjelenés(self, kép):
         display.blit(kép, self.körvonal)
 
@@ -210,19 +196,51 @@ class Player(pygame.sprite.Sprite):
 player = Player(WIDTH/2,HEIGHT/2)
 háttér = Background(0, 0)
 hatter3 = hater3()
-
 message = Dialogue.DynamicText(Dialogue.font, [WIDTH/4 + 50, HEIGHT/1.2 - 50], autoreset=False)
 
+Resume = Button.Button(WIDTH/2, HEIGHT/6, Resume_img, display)
+Settings = Button.Button(WIDTH/2, HEIGHT/2, Settings_img, display)
+Menu = Button.Button(WIDTH/2, HEIGHT/1.2, Menu_img, display)
 
+Paused = False
+basedrawn = False
 #fő loop
 running = True
+
 while running:
     #kilépés a játékból
     for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if Paused == False:
+                if event.key == pygame.K_ESCAPE:
+                    Paused = True
+            else:
+                if event.key == pygame.K_ESCAPE:
+                    Paused = False
+                    basedrawn = False
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
             sys.exit()
-    KépernyőFrissités()
-    clock.tick(24)
+    if not Paused:
+        print(Paused)
+        KépernyőFrissités()
+        clock.tick(24)
+    else:
+        if not basedrawn:
+            rect = pygame.Surface((WIDTH, HEIGHT))
+            rect.set_alpha(100)
+            rect.fill((23, 100, 255))
+            display.blit(rect, (0, 0))
+            basedrawn = True
+
+        if Resume.draw():
+            Paused = False
+            basedrawn = False
+        if Settings.draw():
+            print("Go to settings!")
+        if Menu.draw():
+            print("Go to menu!")
+        pygame.display.flip()
+
 
