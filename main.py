@@ -2,8 +2,10 @@ import math
 import pygame
 import sys
 from pytmx.util_pygame import load_pygame
+
 import Dialogue
 import Button
+import Dropdown
 
 pygame.init()
 
@@ -37,6 +39,8 @@ walkcount = 0
 Resume_img = pygame.image.load("gombok/Resume.png")
 Settings_img = pygame.image.load("gombok/Settings.png")
 Menu_img = pygame.image.load("gombok/Menu.png")
+
+Character_select_img = pygame.image.load("gombok/Character_select.png")
 
 
 def KépernyőFrissités():
@@ -94,11 +98,13 @@ class hater3:
         self.kirajzolas(deli.get_layer_by_name("Tile Layer 1"), sprite_group)
         self.kirajzolas(deli.get_layer_by_name("falak"), trains)
         self.kirajzolas(deli.get_layer_by_name("interaktív"), interaktív)
+
     #hatter kirajzolása
     def kirajzolas(self, layer, groups):
         for x, y, surf in layer.tiles():
             pos = (x * 64 + eltolas[0], y * 64 + eltolas[1])
             Tile(pos=pos, surf=surf, groups=groups)
+
     #rajzolt háttér mozgatása
     def mozgás(self):
         speed = 10
@@ -197,50 +203,111 @@ player = Player(WIDTH/2,HEIGHT/2)
 háttér = Background(0, 0)
 hatter3 = hater3()
 message = Dialogue.DynamicText(Dialogue.font, [WIDTH/4 + 50, HEIGHT/1.2 - 50], autoreset=False)
-
+#Gombok
 Resume = Button.Button(WIDTH/2, HEIGHT/6, Resume_img, display)
 Settings = Button.Button(WIDTH/2, HEIGHT/2, Settings_img, display)
 Menu = Button.Button(WIDTH/2, HEIGHT/1.2, Menu_img, display)
 
+Character_select = Button.Button(WIDTH/2, HEIGHT/1.2, Character_select_img, display)
+#Dropdown
+resolutions = ["1280x720", "1920x1080", "2560x1440"]
+list1 = Dropdown.OptionBox(
+    WIDTH/2.3, HEIGHT/6, 200, 50, (150, 150, 150), (100, 200, 255), pygame.font.SysFont(None, 30),
+    resolutions, name="Resolution")
+
 Paused = False
+Paused_Settings = False
 basedrawn = False
+
 #fő loop
 running = True
 
 while running:
     #kilépés a játékból
-    for event in pygame.event.get():
+    event_list = pygame.event.get()
+    for event in event_list:
         if event.type == pygame.KEYDOWN:
             if Paused == False:
                 if event.key == pygame.K_ESCAPE:
+                    if Paused_Settings:
+                        Paused_Settings = False
+                        display.fill(szín)
+                        hatter3.rajzolas()
+                        # spriteok kirajzolása csoportonként
+                        sprite_group.draw(display)
+                        trains.draw(display)
+                        interaktív.draw(display)
+                        # Játékos kirakjzolása
+                        if player.irány == 1: display.blit(fel[walkcount // 3], player.körvonal)
+                        if player.irány == 2: display.blit(le[walkcount // 3], player.körvonal)
+                        if player.irány == 3: display.blit(jobbra[walkcount // 6], player.körvonal)
+                        if player.irány == 4: display.blit(balra[walkcount // 6], player.körvonal)
+                        if player.irány == 0: display.blit(alap, player.körvonal)
                     Paused = True
             else:
                 if event.key == pygame.K_ESCAPE:
                     Paused = False
+                    Paused_Settings = False
                     basedrawn = False
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
             sys.exit()
-    if not Paused:
+    if not Paused and not Paused_Settings:
         print(Paused)
         KépernyőFrissités()
         clock.tick(24)
-    else:
+    elif Paused:
         if not basedrawn:
             rect = pygame.Surface((WIDTH, HEIGHT))
             rect.set_alpha(100)
             rect.fill((23, 100, 255))
             display.blit(rect, (0, 0))
             basedrawn = True
+        if not Paused_Settings:
+            if Resume.draw():
+                Paused = False
+                basedrawn = False
+            if Settings.draw():
+                print("Go to settings!")
+                Paused = False
+                basedrawn = False
+                Paused_Settings = True
+            if Menu.draw():
+                print("Go to menu!")
+    elif Paused_Settings:
+        pos = player.körvonal
 
-        if Resume.draw():
-            Paused = False
-            basedrawn = False
-        if Settings.draw():
-            print("Go to settings!")
-        if Menu.draw():
-            print("Go to menu!")
+        if not basedrawn:
+            display.fill(szín)
+            hatter3.rajzolas()
+            # spriteok kirajzolása csoportonként
+            sprite_group.draw(display)
+            trains.draw(display)
+            interaktív.draw(display)
+            #Játékos kirakjzolása
+            if player.irány == 1: display.blit(fel[walkcount // 3], pos)
+            if player.irány == 2: display.blit(le[walkcount // 3], pos)
+            if player.irány == 3: display.blit(jobbra[walkcount // 6], pos)
+            if player.irány == 4: display.blit(balra[walkcount // 6], pos)
+            if player.irány == 0: display.blit(alap, player.körvonal)
+            #háttér kirajzolása
+            rect = pygame.Surface((WIDTH, HEIGHT))
+            rect.set_alpha(100)
+            rect.fill((23, 100, 255))
+            display.blit(rect, (0, 0))
+            basedrawn = True
+        #felbontás
+        selected_option = list1.update(event_list)
+        if selected_option >= 0:
+            WIDTH = int(resolutions[selected_option].split("x")[0])
+            HEIGHT = int(resolutions[selected_option].split("x")[1])
+            display = pygame.display.set_mode((WIDTH, HEIGHT))
+        basedrawn = False
+        list1.draw(display)
+        if Character_select.draw():
+            #mute
+            pass
         pygame.display.flip()
-
+    pygame.display.flip()
 
