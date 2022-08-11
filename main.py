@@ -6,6 +6,7 @@ from pytmx.util_pygame import load_pygame
 import Dialogue
 import Button
 import Dropdown
+import Slider
 
 pygame.init()
 
@@ -40,7 +41,6 @@ Resume_img = pygame.image.load("gombok/Resume.png")
 Settings_img = pygame.image.load("gombok/Settings.png")
 Menu_img = pygame.image.load("gombok/Menu.png")
 
-Character_select_img = pygame.image.load("gombok/Character_select.png")
 
 
 def KépernyőFrissités():
@@ -208,12 +208,14 @@ Resume = Button.Button(WIDTH/2, HEIGHT/6, Resume_img, display)
 Settings = Button.Button(WIDTH/2, HEIGHT/2, Settings_img, display)
 Menu = Button.Button(WIDTH/2, HEIGHT/1.2, Menu_img, display)
 
-Character_select = Button.Button(WIDTH/2, HEIGHT/1.2, Character_select_img, display)
 #Dropdown
 resolutions = ["1280x720", "1920x1080", "2560x1440"]
 list1 = Dropdown.OptionBox(
     WIDTH/2.3, HEIGHT/6, 200, 50, (150, 150, 150), (100, 200, 255), pygame.font.SysFont(None, 30),
     resolutions, name="Resolution")
+
+#Slider
+Volume = Slider.Slider(WIDTH/2.3, HEIGHT/3, 300, 30, "Volume")
 
 Paused = False
 Paused_Settings = False
@@ -244,6 +246,7 @@ while running:
                         if player.irány == 4: display.blit(balra[walkcount // 6], player.körvonal)
                         if player.irány == 0: display.blit(alap, player.körvonal)
                     Paused = True
+
             else:
                 if event.key == pygame.K_ESCAPE:
                     Paused = False
@@ -253,6 +256,25 @@ while running:
             running = False
             pygame.quit()
             sys.exit()
+        if Paused_Settings:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if Volume.handle.collidepoint(event.pos):
+                        Volume.dragging = True
+                        mouse_x, mouse_y = event.pos
+                        offset_x = Volume.handle.centerx - mouse_x
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                Volume.dragging = False
+
+            elif event.type == pygame.MOUSEMOTION and Volume.dragging:
+                mouse_x, mouse_y = event.pos
+                Volume.handle.centerx = mouse_x + offset_x
+                if Volume.handle.centerx > Volume.max:
+                    Volume.handle.centerx = Volume.max
+                elif Volume.handle.centerx < Volume.min:
+                    Volume.handle.centerx = Volume.min
+                Volume.get_volume()
     if not Paused and not Paused_Settings:
         print(Paused)
         KépernyőFrissités()
@@ -305,9 +327,8 @@ while running:
             display = pygame.display.set_mode((WIDTH, HEIGHT))
         basedrawn = False
         list1.draw(display)
-        if Character_select.draw():
-            #mute
-            pass
+        #sound
+        Volume.draw(display)
         pygame.display.flip()
     pygame.display.flip()
 
